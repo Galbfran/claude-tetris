@@ -169,7 +169,7 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
 }
 
 function drawGrid() {
-  ctx.strokeStyle = '#22222e';
+  ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--grid-color').trim();
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -186,7 +186,8 @@ function drawGrid() {
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--board-bg').trim();
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   drawGrid();
 
   // board
@@ -319,8 +320,13 @@ applyTheme(savedTheme !== 'light');
 
 themeBtn.addEventListener('click', () => {
   const isLight = document.body.classList.contains('light');
-  applyTheme(!isLight);
+  console.log('[tema] click — isLight antes:', isLight);
+  applyTheme(isLight);
+  console.log('[tema] body.classList después:', document.body.className);
+  console.log('[tema] --board-bg computado:', getComputedStyle(document.body).getPropertyValue('--board-bg'));
+  console.log('[tema] --grid-color computado:', getComputedStyle(document.body).getPropertyValue('--grid-color'));
   localStorage.setItem('tetris-theme', isLight ? 'dark' : 'light');
+  if (paused || gameOver) draw();
 });
 
 init();

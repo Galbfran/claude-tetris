@@ -26,6 +26,7 @@
   --theme-btn-border: #3a3a5a;
   --theme-btn-text: #aaa;
   --theme-btn-hover: #2e2e4a;
+  --grid-color: #22222e;
 }
 
 /* ---- Tema claro ---- */
@@ -50,6 +51,7 @@ body.light {
   --theme-btn-border: #c0c4d8;
   --theme-btn-text: #555;
   --theme-btn-hover: #dde0ee;
+  --grid-color: #c8cce0;
 }
 
 body {
@@ -77,7 +79,6 @@ body {
 #board {
   display: block;
   border: 1px solid var(--board-border);
-  background: var(--board-bg);
   border-radius: 4px;
   box-shadow: 0 0 40px var(--board-shadow);
 }
