@@ -11,8 +11,8 @@ const COLORS = [
   '#d500f9', // T - púrpura neón
   '#00e676', // S - verde lima
   '#ff1744', // Z - rojo intenso
-  '#304ffe', // J - azul cobalto
-  '#ff9100', // L - naranja fuego
+  '#1B1BFF', // J - azul eléctrico neón
+  '#FF4500', // L - naranja neón intenso
 ];
 
 const PIECES = [
