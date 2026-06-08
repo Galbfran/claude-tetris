@@ -301,4 +301,26 @@ document.addEventListener('keydown', e => {
 
 restartBtn.addEventListener('click', init);
 
+// ---- Tema claro / oscuro ----
+const themeBtn = document.getElementById('theme-btn');
+
+function applyTheme(isDark) {
+  if (isDark) {
+    document.body.classList.remove('light');
+    themeBtn.textContent = '☀️ Tema claro';
+  } else {
+    document.body.classList.add('light');
+    themeBtn.textContent = '🌙 Tema oscuro';
+  }
+}
+
+const savedTheme = localStorage.getItem('tetris-theme');
+applyTheme(savedTheme !== 'light');
+
+themeBtn.addEventListener('click', () => {
+  const isLight = document.body.classList.contains('light');
+  applyTheme(!isLight);
+  localStorage.setItem('tetris-theme', isLight ? 'dark' : 'light');
+});
+
 init();
