@@ -73,6 +73,12 @@ const overlay = document.getElementById("overlay");
 const overlayTitle = document.getElementById("overlay-title");
 const overlayScore = document.getElementById("overlay-score");
 const restartBtn = document.getElementById("restart-btn");
+const pauseOverlay = document.getElementById("pause-overlay");
+const resumeBtn = document.getElementById("resume-btn");
+const restartFromPauseBtn = document.getElementById("restart-from-pause-btn");
+const controlsToggleBtn = document.getElementById("controls-toggle-btn");
+const controlsList = document.getElementById("controls-list");
+const startLevelSelect = document.getElementById("start-level");
 
 let board,
   current,
@@ -80,6 +86,7 @@ let board,
   score,
   lines,
   level,
+  startLevel,
   paused,
   gameOver,
   lastTime,
@@ -156,7 +163,7 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
+    level = Math.floor(lines / 10) + startLevel;
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     updateHUD();
   }
@@ -281,13 +288,12 @@ function togglePause() {
   if (gameOver) return;
   paused = !paused;
   if (!paused) {
+    pauseOverlay.classList.add("hidden");
     lastTime = performance.now();
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = "PAUSA";
-    overlayScore.textContent = "";
-    overlay.classList.remove("hidden");
+    pauseOverlay.classList.remove("hidden");
   }
 }
 
@@ -312,22 +318,24 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  startLevel = parseInt(startLevelSelect.value, 10) || 1;
+  level = startLevel;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = Math.max(100, 1000 - (level - 1) * 90);
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
   overlay.classList.add("hidden");
+  pauseOverlay.classList.add("hidden");
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
 document.addEventListener("keydown", (e) => {
-  if (e.code === "KeyP") {
+  if (e.code === "KeyP" || e.code === "Escape") {
     togglePause();
     return;
   }
@@ -355,6 +363,11 @@ document.addEventListener("keydown", (e) => {
 });
 
 restartBtn.addEventListener("click", init);
+resumeBtn.addEventListener("click", togglePause);
+restartFromPauseBtn.addEventListener("click", init);
+controlsToggleBtn.addEventListener("click", () => {
+  controlsList.classList.toggle("hidden");
+});
 
 const themeToggle = document.getElementById("theme-toggle");
 const toggleIcon = themeToggle.querySelector(".toggle-icon");
