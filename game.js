@@ -62,6 +62,15 @@ const PIECES = [
 
 const LINE_SCORES = [0, 100, 300, 500, 800];
 
+const SKINS = {
+  retro:    { colors: [null, '#4dd0e1','#ffd54f','#ba68c8','#81c784','#e57373','#90caf9','#ffb74d','#9e9e9e'] },
+  neon:     { colors: [null, '#00ffee','#ffed4a','#cc44ff','#44ff88','#ff4d6d','#00b4ff','#ff9f1c','#ff44aa'] },
+  pastel:   { colors: [null, '#9bf6ff','#fdffb6','#bdb2ff','#caffbf','#ffadad','#a0c4ff','#ffd6a5','#ffc6ff'] },
+  pixelart: { colors: [null, '#4dd0e1','#ffd54f','#ba68c8','#81c784','#e57373','#90caf9','#ffb74d','#9e9e9e'] },
+};
+
+let currentSkin = 'retro';
+
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 const nextCanvas = document.getElementById("next-canvas");
@@ -208,13 +217,42 @@ function updateHUD() {
 
 function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
-  const color = COLORS[colorIndex];
+  const skin = SKINS[currentSkin];
+  const color = skin.colors[colorIndex];
   context.globalAlpha = alpha ?? 1;
+
+  if (currentSkin === 'neon') {
+    context.shadowBlur = 15;
+    context.shadowColor = color;
+  }
+
   context.fillStyle = color;
   context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-  // highlight
-  context.fillStyle = "rgba(255,255,255,0.12)";
-  context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
+
+  if (currentSkin === 'neon') {
+    context.shadowBlur = 0;
+    context.shadowColor = 'transparent';
+  } else if (currentSkin === 'pastel') {
+    // lighter border instead of highlight
+    context.strokeStyle = 'rgba(255,255,255,0.5)';
+    context.lineWidth = 1;
+    context.strokeRect(x * size + 1.5, y * size + 1.5, size - 3, size - 3);
+  } else if (currentSkin === 'pixelart') {
+    // dot pattern overlay
+    context.fillStyle = 'rgba(0,0,0,0.15)';
+    const dotSize = 2;
+    const step = 4;
+    for (let dy = step / 2; dy < size - 2; dy += step) {
+      for (let dx = step / 2; dx < size - 2; dx += step) {
+        context.fillRect(x * size + 1 + dx, y * size + 1 + dy, dotSize, dotSize);
+      }
+    }
+  } else {
+    // retro: highlight
+    context.fillStyle = "rgba(255,255,255,0.12)";
+    context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
+  }
+
   context.globalAlpha = 1;
 }
 
@@ -372,8 +410,31 @@ function applyTheme(isLight) {
   }
 }
 
+function applySkin(skinName) {
+  currentSkin = skinName;
+  localStorage.setItem('tetris-skin', skinName);
+  if (currentSkin === 'neon') {
+    document.body.classList.add('neon-skin');
+  } else {
+    document.body.classList.remove('neon-skin');
+  }
+  if (current && !gameOver && !paused) {
+    draw();
+    drawNext();
+  }
+}
+
 const savedTheme = localStorage.getItem("tetris-theme");
 applyTheme(savedTheme === "light");
+
+const skinSelector = document.getElementById('skin-selector');
+const savedSkin = localStorage.getItem('tetris-skin') || 'retro';
+applySkin(savedSkin);
+skinSelector.value = savedSkin;
+
+skinSelector.addEventListener('change', () => {
+  applySkin(skinSelector.value);
+});
 
 themeToggle.addEventListener("click", () => {
   const isLight = !document.body.classList.contains("light-mode");
