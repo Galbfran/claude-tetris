@@ -101,7 +101,9 @@ let board,
   lastTime,
   dropAccum,
   dropInterval,
-  animId;
+  animId,
+  combo,
+  maxCombo;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -170,11 +172,15 @@ function clearLines() {
     }
   }
   if (cleared) {
+    combo++;
+    if (combo > maxCombo) maxCombo = combo;
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
     level = Math.floor(lines / 10) + startLevel;
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     updateHUD();
+  } else {
+    combo = 0;
   }
 }
 
@@ -314,11 +320,100 @@ function drawNext() {
       drawBlock(nextCtx, offX + c, offY + r, shape[r][c], NB);
 }
 
+const RECORDS_KEY = "tetris-records";
+const MAX_RECORDS = 5;
+
+function loadRecords() {
+  try {
+    return JSON.parse(localStorage.getItem(RECORDS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecord(name, s, l, mc) {
+  const records = loadRecords();
+  records.push({ name, score: s, lines: l, maxCombo: mc });
+  records.sort((a, b) => b.score - a.score);
+  records.splice(MAX_RECORDS);
+  localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
+  return records;
+}
+
+function isTopScore(s) {
+  const records = loadRecords();
+  if (records.length < MAX_RECORDS) return true;
+  return s >= records[records.length - 1].score;
+}
+
+function renderRecordsTable(highlightIndex) {
+  const container = document.getElementById("records-table-container");
+  const records = loadRecords();
+  if (records.length === 0) {
+    container.innerHTML = "<p class='no-records'>No hay récords aún</p>";
+    return;
+  }
+  const rows = records
+    .map((r, i) => {
+      const cls = i === highlightIndex ? " class='new-record'" : "";
+      return `<tr${cls}><td>${i + 1}</td><td>${r.name}</td><td>${r.score.toLocaleString()}</td><td>${r.lines}</td><td>${r.maxCombo}</td></tr>`;
+    })
+    .join("");
+  container.innerHTML = `
+    <table class="records-table">
+      <thead><tr><th>Pos</th><th>Nombre</th><th>Score</th><th>Líneas</th><th>Combo</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function resetRecords() {
+  localStorage.removeItem(RECORDS_KEY);
+  renderRecordsTable(-1);
+}
+
 function endGame() {
   gameOver = true;
   cancelAnimationFrame(animId);
   overlayTitle.textContent = "GAME OVER";
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
+
+  const nameEntry = document.getElementById("name-entry");
+  const playerNameInput = document.getElementById("player-name");
+  const saveRecordBtn = document.getElementById("save-record-btn");
+
+  if (isTopScore(score)) {
+    nameEntry.classList.remove("hidden");
+    playerNameInput.value = "";
+    setTimeout(() => playerNameInput.focus(), 50);
+
+    const onSave = () => {
+      const name = playerNameInput.value.trim() || "Anónimo";
+      const records = saveRecord(name, score, lines, maxCombo);
+      // Find the position of the newly saved entry. Because multiple entries
+      // can share the same name+score, scan for the last occurrence at this
+      // score level (the array is sorted desc by score).
+      let idx = -1;
+      for (let i = 0; i < records.length; i++) {
+        if (records[i].score === score && records[i].name === name) {
+          idx = i;
+          break;
+        }
+      }
+      nameEntry.classList.add("hidden");
+      renderRecordsTable(idx);
+      saveRecordBtn.removeEventListener("click", onSave);
+      playerNameInput.removeEventListener("keydown", onEnter);
+    };
+    const onEnter = (e) => {
+      if (e.key === "Enter") onSave();
+    };
+    saveRecordBtn.addEventListener("click", onSave);
+    playerNameInput.addEventListener("keydown", onEnter);
+  } else {
+    nameEntry.classList.add("hidden");
+    renderRecordsTable(-1);
+  }
+
   overlay.classList.remove("hidden");
 }
 
@@ -360,6 +455,8 @@ function init() {
   level = startLevel;
   paused = false;
   gameOver = false;
+  combo = 0;
+  maxCombo = 0;
   dropInterval = Math.max(100, 1000 - (level - 1) * 90);
   dropAccum = 0;
   lastTime = performance.now();
@@ -406,6 +503,7 @@ restartFromPauseBtn.addEventListener("click", init);
 controlsToggleBtn.addEventListener("click", () => {
   controlsList.classList.toggle("hidden");
 });
+document.getElementById("reset-records-btn").addEventListener("click", resetRecords);
 
 const themeToggle = document.getElementById("theme-toggle");
 const toggleIcon = themeToggle.querySelector(".toggle-icon");
