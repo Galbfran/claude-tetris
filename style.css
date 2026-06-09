@@ -299,7 +299,8 @@ kbd {
   font-weight: 600;
 }
 
-#start-level {
+#start-level,
+#skin-selector {
   background: var(--kbd-bg);
   border: 1px solid var(--kbd-border);
   border-radius: 4px;
