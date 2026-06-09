@@ -187,6 +187,9 @@ kbd {
   flex-direction: column;
   gap: 12px;
   align-items: center;
+  width: 280px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 #overlay-title {
@@ -217,5 +220,115 @@ kbd {
 }
 
 #restart-btn:hover {
+  background: var(--btn-hover);
+}
+
+/* ---- Leaderboard ---- */
+.btn-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#reset-records-btn {
+  background: transparent;
+  color: var(--label-color);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.15s, color 0.15s;
+}
+
+#reset-records-btn:hover {
+  background: var(--kbd-bg);
+  color: var(--text);
+}
+
+#leaderboard {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+}
+
+#leaderboard th {
+  color: var(--label-color);
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--kbd-border);
+  text-align: left;
+}
+
+#leaderboard td {
+  padding: 5px 6px;
+  color: var(--text);
+}
+
+#leaderboard tr + tr td {
+  border-top: 1px solid var(--kbd-border);
+}
+
+#leaderboard tr.lb-new td {
+  color: #ffd54f;
+  font-weight: 700;
+}
+
+.lb-empty {
+  color: var(--label-color);
+  text-align: center;
+  padding: 12px 0 !important;
+  font-style: italic;
+}
+
+.lb-msg {
+  font-size: 13px;
+  color: var(--overlay-title);
+  font-weight: 700;
+}
+
+#name-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+#player-name {
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--text);
+  width: 180px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#player-name:focus {
+  border-color: var(--btn-bg);
+}
+
+#confirm-name-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#confirm-name-btn:hover {
   background: var(--btn-hover);
 }

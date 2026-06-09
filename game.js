@@ -80,6 +80,7 @@ let board,
   score,
   lines,
   level,
+  maxClear,
   paused,
   gameOver,
   lastTime,
@@ -154,6 +155,7 @@ function clearLines() {
     }
   }
   if (cleared) {
+    if (cleared > maxClear) maxClear = cleared;
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
     level = Math.floor(lines / 10) + 1;
@@ -269,13 +271,78 @@ function drawNext() {
       drawBlock(nextCtx, offX + c, offY + r, shape[r][c], NB);
 }
 
+function loadRecords() {
+  return JSON.parse(localStorage.getItem("tetris-records") || "[]");
+}
+function saveRecords(recs) {
+  localStorage.setItem("tetris-records", JSON.stringify(recs));
+}
+function isTopScore(s) {
+  const r = loadRecords();
+  return r.length < 5 || s > r[r.length - 1].score;
+}
+function addRecord(name, s, l, mc) {
+  const recs = loadRecords();
+  recs.push({ name, score: s, lines: l, maxClear: mc });
+  recs.sort((a, b) => b.score - a.score);
+  if (recs.length > 5) recs.length = 5;
+  saveRecords(recs);
+}
+function renderLeaderboard(highlightScore) {
+  const recs = loadRecords();
+  const tbody = document.getElementById("lb-body");
+  tbody.innerHTML =
+    recs.length === 0
+      ? '<tr><td colspan="4" class="lb-empty">Sin records aún</td></tr>'
+      : recs
+          .map((r, i) => {
+            const hl =
+              highlightScore !== undefined && r.score === highlightScore
+                ? " lb-new"
+                : "";
+            return `<tr class="${hl}"><td>${i + 1}</td><td>${r.name}</td><td>${r.score.toLocaleString()}</td><td>${r.lines} / ${r.maxClear}</td></tr>`;
+          })
+          .join("");
+}
+
+const nameSection = document.getElementById("name-section");
+const playerNameInput = document.getElementById("player-name");
+const confirmNameBtn = document.getElementById("confirm-name-btn");
+const resetRecordsBtn = document.getElementById("reset-records-btn");
+
 function endGame() {
   gameOver = true;
   cancelAnimationFrame(animId);
   overlayTitle.textContent = "GAME OVER";
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
+  restartBtn.textContent = "Reiniciar";
+
+  if (isTopScore(score)) {
+    nameSection.classList.remove("hidden");
+    playerNameInput.value = "";
+    renderLeaderboard();
+  } else {
+    nameSection.classList.add("hidden");
+    renderLeaderboard();
+  }
   overlay.classList.remove("hidden");
 }
+
+confirmNameBtn.addEventListener("click", () => {
+  const name = playerNameInput.value.trim() || "Anónimo";
+  addRecord(name, score, lines, maxClear);
+  nameSection.classList.add("hidden");
+  renderLeaderboard(score);
+});
+
+playerNameInput.addEventListener("keydown", (e) => {
+  if (e.code === "Enter") confirmNameBtn.click();
+});
+
+resetRecordsBtn.addEventListener("click", () => {
+  localStorage.removeItem("tetris-records");
+  renderLeaderboard();
+});
 
 function togglePause() {
   if (gameOver) return;
@@ -313,6 +380,7 @@ function init() {
   score = 0;
   lines = 0;
   level = 1;
+  maxClear = 0;
   paused = false;
   gameOver = false;
   dropInterval = 1000;
@@ -356,6 +424,15 @@ document.addEventListener("keydown", (e) => {
 
 restartBtn.addEventListener("click", init);
 
+function showStartScreen() {
+  overlayTitle.textContent = "TETRIS";
+  overlayScore.textContent = "";
+  restartBtn.textContent = "Jugar";
+  nameSection.classList.add("hidden");
+  renderLeaderboard();
+  overlay.classList.remove("hidden");
+}
+
 const themeToggle = document.getElementById("theme-toggle");
 const toggleIcon = themeToggle.querySelector(".toggle-icon");
 const toggleLabel = themeToggle.querySelector(".toggle-label");
@@ -381,4 +458,4 @@ themeToggle.addEventListener("click", () => {
   localStorage.setItem("tetris-theme", isLight ? "light" : "dark");
 });
 
-init();
+showStartScreen();
