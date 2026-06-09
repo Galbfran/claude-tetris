@@ -165,6 +165,36 @@ kbd {
   background: var(--theme-btn-hover);
 }
 
+/* ---- Selector de skin ---- */
+.skin-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.skin-btn {
+  background: var(--theme-btn-bg);
+  border: 1px solid var(--theme-btn-border);
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--theme-btn-text);
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.15s;
+}
+
+.skin-btn:hover {
+  background: var(--theme-btn-hover);
+}
+
+.skin-btn.active {
+  background: var(--btn-bg);
+  border-color: var(--btn-bg);
+  color: var(--btn-text);
+}
+
 /* ---- Overlay ---- */
 .overlay {
   position: absolute;
