@@ -187,6 +187,9 @@ kbd {
   flex-direction: column;
   gap: 12px;
   align-items: center;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 16px;
 }
 
 #overlay-title {
@@ -218,4 +221,116 @@ kbd {
 
 #restart-btn:hover {
   background: var(--btn-hover);
+}
+
+/* ---- Records ---- */
+#name-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+#name-entry p {
+  font-size: 13px;
+  color: var(--text);
+}
+
+#player-name {
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: var(--text);
+  text-align: center;
+  outline: none;
+  width: 160px;
+  transition: border-color 0.15s;
+}
+
+#player-name:focus {
+  border-color: var(--btn-bg);
+}
+
+#save-record-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 6px;
+  padding: 7px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: background 0.15s;
+}
+
+#save-record-btn:hover {
+  background: var(--btn-hover);
+}
+
+#name-entry.hidden,
+.hidden {
+  display: none !important;
+}
+
+#records-table-container {
+  width: 100%;
+  min-width: 260px;
+}
+
+.no-records {
+  font-size: 12px;
+  color: var(--label-color);
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+}
+
+.records-table th {
+  color: var(--label-color);
+  letter-spacing: 1px;
+  font-size: 10px;
+  padding: 4px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--board-border);
+}
+
+.records-table td {
+  color: var(--text);
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.records-table tbody tr:hover td {
+  background: rgba(255,255,255,0.04);
+}
+
+.new-record td {
+  color: #ffd54f;
+  font-weight: 700;
+}
+
+#reset-records-btn {
+  background: transparent;
+  border: 1px solid #e5737355;
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #e57373;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#reset-records-btn:hover {
+  background: rgba(229, 115, 115, 0.12);
+  border-color: #e57373;
 }
