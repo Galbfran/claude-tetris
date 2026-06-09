@@ -1,0 +1,20 @@
+# Índice central de worktrees activos
+# Generado por /worktree-init — no editar manualmente
+updated: '2026-06-09'
+worktrees:
+  - branch: local-highscores
+    description: fix game and styles
+    reviewed: false
+    created: '2026-06-09'
+  - branch: pause-menu-complete
+    description: 'feat: implementar menú de pausa completo con opciones y selector de nivel'
+    reviewed: false
+    created: '2026-06-09'
+  - branch: pause-menu-records-skins
+    description: fix game and styles
+    reviewed: false
+    created: '2026-06-09'
+  - branch: visual-themes-skins
+    description: 'feat: agregar selector de skins visuales (Retro, Neon, Pastel, Pixel Art)'
+    reviewed: false
+    created: '2026-06-09'
